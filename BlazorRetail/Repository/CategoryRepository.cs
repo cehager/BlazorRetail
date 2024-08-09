@@ -1,5 +1,6 @@
 ﻿using BlazorRetail.Data;
 using BlazorRetail.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorRetail.Repository
 {
@@ -12,46 +13,46 @@ namespace BlazorRetail.Repository
             _db = db;
         }
 
-        public Category Create(Category category)
+        public async Task<Category> CreateAsync(Category category)
         {
-            _db.Categories.Add(category);
-            _db.SaveChanges();
+            await _db.Categories.AddAsync(category);
+            await _db.SaveChangesAsync();
             return category;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var category = _db.Categories.FirstOrDefault(c => c.Id == id);
+            var category = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
             if (category != null)
             {
                 _db.Categories.Remove(category);
-               return _db.SaveChanges() > 0;
+               return (await _db.SaveChangesAsync() > 0);
             }
             return false;
         }
 
-        public Category Get(int id)
+        public async Task<Category> GetAsync(int id)
         {
-            var obj = _db.Categories.FirstOrDefault(x => x.Id == id);
+            var obj = await _db.Categories.FirstOrDefaultAsync(x => x.Id == id);
             if (obj == null) {
-                return new Category;
+                return new Category();
             }
             return obj;
         }
 
-        public IEnumerable<Category> GetAll()
+        public async Task<IEnumerable<Category>> GetAllAsync()
         {
-            return _db.Categories.ToList();
+            return await _db.Categories.ToListAsync();
         }
 
-        public Category Update(Category category)
+        public async Task<Category> UpdateAsync(Category category)
         {
-            var catFromDb = _db.Categories.FirstOrDefault( c => c.Id == category.Id);
+            var catFromDb = await _db.Categories.FirstOrDefaultAsync( c => c.Id == category.Id);
             if (catFromDb != null)
             {
                 catFromDb.Name = category.Name;
                 _db.Categories.Update(catFromDb);
-                _db.SaveChanges();
+                 await _db.SaveChangesAsync();
                 return catFromDb;
             }
             return category;
